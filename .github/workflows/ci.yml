@@ -1,12 +1,10 @@
-name: Continuous Integration
+name: Build
 
 on:
   push:
-    branches:
-      - $default-branch
+    branches: [$default-branch]
   pull_request:
-    branches:
-      - $default-branch
+    branches: [$default-branch]
 
 env:
   BUILD_TYPE: Debug
