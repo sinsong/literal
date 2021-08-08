@@ -1,3 +1,3 @@
-add_library(literal_debug OBJECT
+add_literal_module(literal_debug
     unreachable.cpp
 )
