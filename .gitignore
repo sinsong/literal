@@ -1,0 +1,8 @@
+# vscode
+.vscode/
+
+# clangd
+.cache/
+
+# cmake
+build/
