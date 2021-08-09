@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(literal C CXX)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 
 #https://stackoverflow.com/questions/33062728/cmake-link-shared-library-on-windows
 if(MSVC)
