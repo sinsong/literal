@@ -6,3 +6,7 @@
 
 # cmake
 build/
+
+# visual studio
+out/
+.vs

@@ -10,8 +10,10 @@ template <typename Type>
 class singly_list
 {
 public:
-    typedef Type                   value_type;
-    typedef singly_list_node<Type> node_type;
+    using value_type = Type;
+    using node_type  = singly_list_node<Type>;
+    using iterator = node_type*;
+    using constant_iterator = const node_type*;
 
     singly_list()
         : first(nullptr){}
@@ -30,27 +32,37 @@ public:
 
     bool empty() const { return first == nullptr; }
 
-    node_type *begin() const { return first; };
-    node_type *end()   const { return nullptr; }
+    constant_iterator cbegin() const { return const_cast<constant_iterator>(first); }
+    constant_iterator cend() const { return nullptr; }
+    iterator begin() { return first; }
+    iterator end() { return nullptr; }
+    constant_iterator begin() const { return cbegin(); }
+    constant_iterator end()   const { return cend(); }
 
     void cons(const value_type &value) { return insert_head(value); }
-    // TODO: insert_head &&
-    void cons(value_type &&value) { return insert_head(value); }
+    void cons(value_type &&value) { return insert_head(std::forward<value_type>(value)); }
 
     void insert_head(const value_type &value)
     {
-        node_type *target = new node_type;
-        target->value = value;
-        target->next = first;
+        node_type *target = new node_type{value, first};
+        first = target;
+    }
+
+    void insert_head(value_type &&value)
+    {
+        node_type *target = new node_type{std::forward<value_type>(value), first};
         first = target;
     }
 
     void insert_after(node_type *node, const value_type &value)
     {
-        node_type *target = new node_type;
-        target->next = node->next;
-        target->value = value;
+        node_type *target = new node_type{value, node->next};
+        node->next = target;
+    }
 
+    void insert_after(node_type *node, value_type &&value)
+    {
+        node_type *target = new node_type{std::forward<value_type>(value), node->next};
         node->next = target;
     }
 
@@ -58,14 +70,14 @@ public:
     {
         if(first == node)
             return remove_head();
-        else
-        {
-            // 没找到就是 ub，炸！
-            node_type *curr = first;
-            while (curr->next != node)
-                curr = curr->next;
-            return remove_after(curr);
+        node_type *curr = first;
+        while (curr != nullptr && curr->next != node)
+            curr = curr->next;
+        if (!curr) {
+            return;
         }
+        return remove_after(curr);
+        
         literal_unreachable("can't be here.");
     }
 

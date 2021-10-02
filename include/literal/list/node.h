@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <utility>
 
 namespace literal
@@ -11,22 +12,27 @@ template <typename Type>
 class singly_list_node
 {
 public:
-    typedef Type                   value_type;
-    typedef singly_list_node<Type> node_type;
+    using value_type = Type;
+    using node_type  = singly_list_node<Type>;
+
+    singly_list_node() = default;
+    singly_list_node(value_type &&v, node_type *n): value{std::forward<value_type>(v)}, next{n}
+    {}
 
     value_type value;
 
     node_type *next;
 };
 
+// pointers are always nothrow swappable, so just check the value's type
+// Using ADL for swap
 template <class Type>
 inline void swap(singly_list_node<Type> *x, singly_list_node<Type> *y)
+    noexcept(std::is_nothrow_swappable_v<typename singly_list_node<Type>::value_type>)
 {
-    singly_list_node<Type> *tempptr = x->next;
-    x->next = y->next;
-    y->next = tempptr;
-
-    std::swap(x->value, y->value);
+    using std::swap;
+    swap(x->next, y->next);
+    swap(x->value, y->value);
 }
 
 // 双链表
@@ -35,8 +41,8 @@ template <typename Type>
 class list_node
 {
 public:
-    typedef Type            value_type;
-    typedef list_node<Type> node_type;
+    using value_type = Type;
+    using node_type  = list_node<Type>;
 
     value_type value;
 
@@ -46,17 +52,13 @@ public:
 
 template <typename Type>
 inline void swap(list_node<Type> *x, list_node<Type> *y)
+    noexcept(std::is_nothrow_swappable_v<typename list_node<Type>::value_type>)
 {
 
-    list_node<Type> *tempprev = x->prev;
-    x->prev = y->prev;
-    y->prev = tempprev;
-    
-    list_node<Type> *tempnext = x->next;
-    x->next = y->next;
-    y->next = tempnext;
-
-    std::swap(x->value, y->value);
+    using std::swap;
+    swap(x->prev, y->prev);
+    swap(x->next, y->next);
+    swap(x->value, y->value);
 }
 
 } // namespace literal

@@ -10,8 +10,10 @@ template <typename Type>
 class list
 {
 public:
-    typedef Type            value_type;
-    typedef list_node<Type> node_type;
+    using value_type = Type;
+    using node_type  = list_node<Type>;
+    using iterator = node_type*;
+    using constant_iterator = const node_type*;
 
     list()
         : first(nullptr){}
@@ -30,16 +32,19 @@ public:
 
     bool empty() const { return first == nullptr; }
 
-    node_type *begin() const { return first;   }
-    node_type *end()   const { return nullptr; }
+    constant_iterator cbegin() const { return const_cast<constant_iterator>(first); }
+    constant_iterator cend() const { return nullptr; }
+    iterator begin() { return first; }
+    iterator end() { return nullptr; }
+    constant_iterator begin() const { return cbegin(); }
+    constant_iterator end()   const { return cend(); }
 
     void cons(const value_type &value) { return push_front(value); }
 
     void push_front(const value_type &value)
     {
         // construct
-        node_type *target = new node_type;
-        target->value = value;
+        node_type *target = new node_type{value};
 
         // property
         if ( (target->next = first) != nullptr ) // first != nullptr
@@ -53,8 +58,7 @@ public:
     void insert_before(node_type *node, const value_type &value)
     {
         // construct
-        node_type *target = new node_type;
-        target->value = value;
+        node_type *target = new node_type{value};
 
         // property
         if ( (target->prev = node->prev) == nullptr ) // node == first
@@ -66,8 +70,7 @@ public:
     void insert_after(node_type *node, const value_type &value)
     {
         // construct
-        node_type *target = new node_type;
-        target->value = value;
+        node_type *target = new node_type{value};
 
         // property
         if ( (target->next = node->next) != nullptr ) // 要不要改 node->next 的 prev

@@ -10,8 +10,10 @@ template <typename Type>
 class singly_tailq
 {
 public:
-    typedef Type                   value_type;
-    typedef singly_list_node<Type> node_type;
+    using value_type = Type;
+    using node_type = list_node<Type>;
+    using iterator = node_type*;
+    using constant_iterator = const node_type*;
 
     singly_tailq()
         : first(nullptr),
@@ -31,8 +33,13 @@ public:
 
     bool empty() const { return first == nullptr; }
 
-    node_type *begin() const { return first; };
-    node_type *end()   const { return nullptr; }
+    constant_iterator cbegin() const { return const_cast<constant_iterator>(first); }
+    constant_iterator cend() const { return nullptr; }
+    iterator begin() { return first; }
+    iterator end() { return nullptr; }
+    constant_iterator begin() const { return cbegin(); }
+    constant_iterator end()   const { return cend(); }
+
     node_type *_last() const { return last; }
 
     void cons(const value_type &value) { return push_front(value); }
